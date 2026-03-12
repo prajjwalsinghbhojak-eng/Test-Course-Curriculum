@@ -9,4 +9,9 @@ This repository serves as a central hub for training and development materials r
 
 ## Tech Stack
 - **Language:** Python 3.12+
-- **Focus:** Generative AI (LLMs, RAG, Prompt Engineering)
+- **Focus:** Generative AI (LLMs, Prompt Engineering, RAG, AI Assistants, Gen AI Applications)
+
+---
+
+## Learning Programs
+- [10-Day Intensive AI Program: LLM Engineering, RAG Systems & Agentic AI](curriculum/10-Day%20Intensive%20AI%20Program_%20LLM%20Engineering,%20RAG%20Systems%20&%20Agentic%20AI.docx)
