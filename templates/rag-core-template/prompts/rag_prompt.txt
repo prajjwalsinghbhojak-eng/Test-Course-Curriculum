@@ -1,0 +1,10 @@
+Answer the user's question based ONLY on the provided context.
+If the answer is not in the context, say "I don't have enough information to answer this."
+
+Context:
+{context}
+
+Question:
+{question}
+
+Helpful Answer:

@@ -1,0 +1,9 @@
+pydantic
+pydantic-settings
+langchain-google-genai
+langchain-google-vertexai
+chromadb
+python-dotenv
+google-cloud-aiplatform
+langchain-community
+langchain

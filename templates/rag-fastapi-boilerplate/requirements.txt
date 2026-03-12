@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+langchain-google-genai
+langchain-google-vertexai
+chromadb
+python-dotenv
+google-cloud-aiplatform
