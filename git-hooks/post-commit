@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+"""
+git-hooks/post-commit
+Runs after every successful commit.
+Captures commit metadata for learning analytics.
+"""
+
+import subprocess
+import sys
+import os
+
+REPO_ROOT = subprocess.check_output(
+    ["git", "rev-parse", "--show-toplevel"], text=True
+).strip()
+
+sys.path.insert(0, REPO_ROOT)
+os.environ["REPO_ROOT"] = REPO_ROOT
+
+from monitor.config import GIT_LOG_FILE
+from monitor.event_writer import write_event
+
+
+def get_commit_info() -> dict:
+    def git(*args) -> str:
+        return subprocess.check_output(["git"] + list(args), text=True).strip()
+
+    changed_files = git("diff-tree", "--no-commit-id", "-r", "--name-only", "HEAD").splitlines()
+    return {
+        "hash":           git("rev-parse", "--short", "HEAD"),
+        "message":        git("log", "-1", "--format=%s"),
+        "author":         git("log", "-1", "--format=%an"),
+        "files_changed":  len(changed_files),
+        "branch":         git("rev-parse", "--abbrev-ref", "HEAD"),
+    }
+
+
+def main():
+    info = get_commit_info()
+    write_event(GIT_LOG_FILE, "commit", info)
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
