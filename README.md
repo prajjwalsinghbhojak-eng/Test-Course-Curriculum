@@ -1,87 +1,277 @@
-# AI Center of Excellence (CoE) - L&D 🚀
+# AI Learning Monitor — Boilerplate Repo
 
-Welcome to the **AI Center of Excellence Learning & Development** repository. This is the central engineering hub designed to standardize, train, and accelerate the adoption of Generative AI across the organization.
-
----
-
-## 📖 Overview
-This repository serves as a curated environment for team members to transition from AI fundamentals to building production-grade **Generative AI** systems. We focus on modularity, scalability, and the latest industry standards in **LLM Engineering**, **RAG**, and **Agentic Workflows**.
-
-## 🎯 Strategic Objectives
-*   **Skill Transformation:** Upskill engineering teams in AI/ML fundamentals and advanced GenAI.
-*   **Production Readiness:** Provide "Gold Standard" templates for FastAPI and Core RAG integration.
-*   **Standardization:** Enforce Python 3.12+ best practices and modular architecture across all AI projects.
+> A self-contained, background monitoring agent that tracks learner progress,
+> AI tool usage, and development discipline — embedded directly in the dev environment.
 
 ---
 
-## 📁 Repository Architecture
-```text
-AI_CoE_L-D/
-├── curriculum/                 # 📚 Structured training paths & materials
-│   └── 10-Day Intensive...     # 10-Day AI Program Document
-├── templates/                  # 🛠️ Production-ready starters
-│   ├── rag-fastapi-boilerplate # Enterprise Web API with RAG
-│   └── rag-core-template       # Lightweight logic-first RAG engine
-├── .gitignore                  # Development environment protection
-└── README.md                   # Central documentation hub
+## How it works
+
+When a learner clones this repo and runs setup, three monitoring layers
+activate silently in the background:
+
+| Layer | What it captures |
+|---|---|
+| **Claude Code hooks** | Every tool call (Bash, Edit, Read, WebSearch…), category, session prompts, session summary |
+| **Gemini CLI hooks** | Same as Claude Code — tool calls, categories, session summary |
+| **Git hooks** | Every commit: files changed, test presence, test pass/fail |
+| **Filesystem daemon** | File creation/modification: planning docs, test files, notebooks, code |
+
+All events are written as append-only JSONL logs in `logs/{learner_id}/`.
+At session end, logs are automatically pushed to the `monitoring-reports` branch
+of the shared repo, where instructors can review them.
+
+---
+
+## Learner setup (one-time, after cloning)
+
+### Step 1 — Configure your token
+
+Your instructor will provide a `MONITOR_PUSH_TOKEN`. This is how your progress
+logs reach the instructor dashboard. Without it, everything else still works —
+logs just won't be visible to your instructor.
+
+```bash
+# Copy the example config and fill in your token
+cp .env.monitor.example .env.monitor
+# Open .env.monitor in any editor and paste your token into MONITOR_PUSH_TOKEN
+# Also add your GEMINI_API_KEY if you have one
+```
+
+### Step 2 — Set your git identity
+
+```bash
+git config --global user.name  "Your Name"
+git config --global user.email "you@company.com"
+```
+
+### Step 3 — Run setup
+
+**Linux / Mac / GitHub Codespaces:**
+```bash
+bash setup.sh
+```
+
+**Windows (PowerShell or Git Bash):**
+```bash
+python setup.py
+```
+
+Setup installs dependencies, configures git hooks, starts the background daemon,
+loads your `.env.monitor`, and tells you if anything is missing.
+
+### Step 4 — Verify
+
+```bash
+make health    # All checks should show ✓
+```
+
+> **Codespaces users:** If your instructor has set org-level secrets, steps 1–2
+> above may already be pre-configured. Run `make health` first to check.
+
+---
+
+## Learner commands
+
+```bash
+make health       # Full diagnostic: daemon, hooks, identity, dependencies
+make report       # Generate your personal progress report (last 7 days)
+make report-30    # Generate a 30-day report
+make sync         # Manually push logs to the team reports branch
+make status       # Check whether the daemon is running
+make stop         # Stop the daemon
+make restart      # Restart the daemon
 ```
 
 ---
 
-## 🔑 Prerequisites & Environment
-To ensure compatibility across all templates and learning modules:
+## What gets monitored
 
-### 1. Development Requirements
-- **Python:** 3.12+ (Strictly enforced for type hinting and performance).
-- **Package Manager:** `pip` or `poetry`.
+### AI coding assistant usage (Claude Code + Gemini CLI)
 
-### 2. AI Infrastructure & Permissions
-Our ecosystem supports both developer-friendly and enterprise-grade Google AI backends:
-- **Google AI (Gemini API):** Quick access via [Google AI Studio](https://aistudio.google.com/).
-- **Vertex AI (GCP):** Enterprise deployment with IAM roles (requires `Vertex AI User` role).
-- **Auth:** Ensure `gcloud auth application-default login` is configured for Vertex AI usage.
+Every tool call is logged with:
+- Tool name and category (`execution`, `code_edit`, `exploration`, `planning`, `research`)
+- Session summary at end of session (total calls, breakdown by category)
+- Prompts typed to Claude (captured from session transcript)
 
----
+### Jupyter notebook activity (Phase 1 — learning path)
 
-## 🎓 Learning Curriculum
-Discover our structured paths for mastering Generative AI:
+Every time a `.ipynb` file is saved:
+- Which cells have been executed and in what order
+- Execution ratio (cells run / total code cells)
+- Errors encountered (type + message + cell source)
+- Whether markdown notes are present
 
-- 📑 **[10-Day Intensive AI Program: LLM Engineering, RAG Systems & Agentic AI](curriculum/10-Day%20Intensive%20AI%20Program_%20LLM%20Engineering,%20RAG%20Systems%20&%20Agentic%20AI.docx)**
-  *A comprehensive deep-dive covering everything from Prompt Engineering to multi-agent systems.*
+### Git discipline
 
----
+On every `git commit`:
+- Files staged and changed
+- Whether test files are present
+- Whether tests pass before committing
+- Commit message, branch, and author
 
-## 🚀 Acceleration Templates
-We provide modular boilerplates to jumpstart development with best practices baked in.
+### Filesystem activity
 
-### 1. [RAG-FastAPI Boilerplate](templates/rag-fastapi-boilerplate/README.md)
-*The "Enterprise Starter"*
-- **Best For:** Building scalable web applications and AI-powered microservices.
-- **Stack:** FastAPI, Pydantic (Settings), LangChain, ChromaDB.
-- **Features:** Production directory structure, Swagger logs, and environment-driven provider switching.
-
-### 2. [RAG-Core Template](templates/rag-core-template/README.md)
-*The "Logic-First Modular Template"*
-- **Best For:** Scripting, batch jobs, CLI tools, or integration into existing Python apps.
-- **Stack:** Pure Python, LangChain, ChromaDB.
-- **Features:** Minimal overhead, prompt decoupling, and direct provider access (Gemini/Vertex).
+Continuously (background daemon):
+- Planning artifacts created (`prd`, `spec`, `plan`, `design`, `architecture`)
+- Test files created
+- Python source and notebook activity
 
 ---
 
-## 🛠️ Tech Stack & Standards
-- **Core:** Python 3.12+
-- **Frameworks:** FastAPI, LangChain, Pydantic
-- **AI Models:** Google Gemini (1.5 Flash/Pro), Vertex AI Model Model Garden
-- **Vector Search:** ChromaDB
-- **Standards:**
-  - **Modular Design:** Clear separation between API, Services, and Config.
-  - **Prompt Decoupling:** All prompts are stored in `.txt` files in `app/core/prompts/`.
-  - **DRY Logic:** Centralized service managers and singleton patterns.
-  - **Type Safety:** Full Pydantic validation for all configuration and inputs.
+## Configuration
+
+All behaviour is tunable via environment variables. Copy `.env.monitor.example`
+to `.env.monitor` and adjust values as needed — no code changes required.
+
+```bash
+cp .env.monitor.example .env.monitor
+# Edit .env.monitor to set MONITOR_PUSH_TOKEN, thresholds, etc.
+source .env.monitor
+```
+
+Key variables:
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `MONITOR_REPORTS_BRANCH` | `monitoring-reports` | Branch where logs are pushed |
+| `MONITOR_PUSH_TOKEN` | _(empty)_ | GitHub PAT for private monitoring repo |
+| `MONITOR_NOTEBOOK_COMPLETE_THRESHOLD` | `0.9` | Ratio to mark notebook as completed |
+| `MONITOR_PROMPT_SHORT_THRESHOLD` | `50` | Char count below which a prompt is "short" |
+| `MONITOR_FS_DEBOUNCE_WINDOW` | `2.0` | Seconds to suppress duplicate file events |
+
+See `.env.monitor.example` for the full list.
 
 ---
 
-## 🤝 Contribution & Support
-For queries regarding the CoE or requests for new templates, please reach out to the **AI Center of Excellence Leads**.
+## Instructor view
 
-*"Building the future of AI, one module at a time."*
+All learner logs are pushed to the `monitoring-reports` branch:
+
+```
+monitoring-reports/
+  logs/
+    alice_smith/
+      claude_events.jsonl
+      gemini_events.jsonl
+      git_events.jsonl
+      fs_events.jsonl
+      sessions.jsonl
+      notebook_events.jsonl
+    bob_jones/
+      ...
+  reports/
+    alice_smith/
+      progress_report_2025-01-27.md
+    bob_jones/
+      ...
+```
+
+A GitHub Action runs every Monday and generates fresh Markdown progress reports
+for all learners automatically.
+
+To review manually:
+```bash
+git fetch origin monitoring-reports
+git checkout monitoring-reports
+ls reports/
+git checkout main
+```
+
+---
+
+## Report format
+
+Each learner report covers:
+
+| Section | Contents |
+|---|---|
+| 📓 Learning Progress | Notebook execution per day, completion rate, errors |
+| 🤖 AI Assistant Usage | Tool calls by category, per-source (Claude vs Gemini), top tools |
+| 💬 Prompt Patterns | Prompt count, average length, short vs detailed breakdown |
+| 📁 File System Activity | Files created/modified, planning docs, test files |
+| 🔀 Git Discipline | Commit count, avg files/commit, test discipline rate |
+| 💡 Insights | Automated ✅ / ⚠️ flags and recommended next steps |
+
+---
+
+## Architecture
+
+```
+.claude/settings.json          ← Claude Code lifecycle hooks
+.gemini/settings.json          ← Gemini CLI lifecycle hooks
+monitor/
+  config.py                    ← All paths, thresholds, and settings (env-configurable)
+  event_writer.py              ← Thread-safe JSONL writer (cross-platform)
+  log_event.py                 ← PreToolUse / PostToolUse / Notification handler
+  log_session.py               ← Session-end handler + sync trigger
+  notebook_tracker.py          ← Jupyter notebook execution parser
+  transcript_reader.py         ← Claude Code session transcript parser
+  daemon.py                    ← Filesystem watcher (background)
+  push_logs.py                 ← Pushes logs to monitoring-reports branch
+  report_generator.py          ← Generates Markdown progress reports
+git-hooks/
+  pre-commit                   ← Test detection + git event logging
+  post-commit                  ← Commit metadata logging
+.github/workflows/
+  weekly_reports.yml           ← Auto-generates all learner reports every Monday
+setup.sh                       ← One-time bootstrap (Linux/Mac/Codespaces)
+setup.py                       ← One-time bootstrap (Windows, cross-platform)
+requirements.txt               ← Python dependencies
+.env.monitor.example           ← Template for all configurable settings
+Makefile                       ← Convenience commands
+```
+
+---
+
+## Troubleshooting
+
+**Daemon not running after setup**
+```bash
+make status      # check PID file
+make restart     # stop + start
+```
+
+**Logs not appearing in `logs/{name}/`**
+```bash
+# Confirm REPO_ROOT is set
+echo $REPO_ROOT
+
+# Re-export if missing
+export REPO_ROOT=$(pwd)
+```
+
+**Claude Code hooks not firing**
+```bash
+# Verify settings file is present
+cat .claude/settings.json
+
+# Check the hook format — hooks receive data via stdin, not env vars
+```
+
+**Git hooks not logging**
+```bash
+# Verify hooks are executable
+ls -la .git/hooks/pre-commit .git/hooks/post-commit
+
+# Re-run setup if missing
+bash setup.sh
+```
+
+**Remote push failing**
+```bash
+# Test connectivity
+git ls-remote origin
+
+# For private monitoring repo, set the token
+export MONITOR_PUSH_TOKEN=your-pat-here
+make sync
+```
+
+---
+
+## Privacy note
+
+Logs capture tool types and file paths — **not file contents or code**.
+Learners can view their own logs at any time in `logs/{their_name}/`.
+Session prompt text from Claude Code transcripts is captured for coaching analysis.
