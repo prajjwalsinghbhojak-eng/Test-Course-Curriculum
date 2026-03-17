@@ -1,0 +1,125 @@
+name: Weekly Learning Progress Reports
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # Every Monday at 06:00 UTC
+  workflow_dispatch:        # Manual trigger from Actions tab
+
+jobs:
+  generate-reports:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # Needed to push reports back to monitoring-reports
+
+    steps:
+      - name: Check out main branch (contains monitor/ code)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Pull learner logs from monitoring-reports
+        run: |
+          git fetch origin monitoring-reports
+          # Overlay logs/ from monitoring-reports into the workspace
+          git checkout origin/monitoring-reports -- logs/ || echo "No logs yet on monitoring-reports"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install watchdog --quiet
+
+      - name: Generate reports for all learners
+        run: |
+          export REPO_ROOT=$GITHUB_WORKSPACE
+
+          for learner_dir in logs/*/; do
+            [ -d "$learner_dir" ] || continue
+            learner=$(basename "$learner_dir")
+            echo "── Generating report for: $learner"
+            LEARNER_OVERRIDE="$learner" python3 - <<'PYEOF'
+          import os, sys
+          repo_root = os.environ['REPO_ROOT']
+          os.environ['REPO_ROOT'] = repo_root
+          sys.path.insert(0, repo_root)
+
+          import monitor.config as cfg
+          learner = os.environ['LEARNER_OVERRIDE']
+          cfg.LEARNER_ID      = learner
+          cfg.LOGS_DIR        = cfg.REPO_ROOT / 'logs'    / learner
+          cfg.REPORTS_DIR     = cfg.REPO_ROOT / 'reports' / learner
+          cfg.CLAUDE_LOG_FILE = cfg.LOGS_DIR  / 'claude_events.jsonl'
+          cfg.GIT_LOG_FILE    = cfg.LOGS_DIR  / 'git_events.jsonl'
+          cfg.FS_LOG_FILE     = cfg.LOGS_DIR  / 'fs_events.jsonl'
+          cfg.SESSION_LOG_FILE= cfg.LOGS_DIR  / 'sessions.jsonl'
+          cfg.REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+
+          import monitor.report_generator as rg
+          rg.generate(days=7)
+          PYEOF
+          done
+
+      - name: Push generated reports to monitoring-reports branch
+        run: |
+          export REPO_ROOT=$GITHUB_WORKSPACE
+          python3 - <<'PYEOF'
+          import os, sys, subprocess, shutil, tempfile, datetime
+
+          repo_root   = os.environ['REPO_ROOT']
+          remote_url  = subprocess.check_output(
+              ['git', 'remote', 'get-url', 'origin'], cwd=repo_root, text=True
+          ).strip()
+
+          # Inject GITHUB_TOKEN for authenticated push
+          token = os.environ.get('GITHUB_TOKEN', '')
+          if token and remote_url.startswith('https://'):
+              from urllib.parse import urlparse, urlunparse
+              p = urlparse(remote_url)
+              remote_url = urlunparse(p._replace(netloc=f'x-access-token:{token}@{p.hostname}'))
+
+          def run(cmd, cwd):
+              subprocess.run(cmd, cwd=cwd, check=True, capture_output=True)
+
+          with tempfile.TemporaryDirectory() as tmp:
+              # Check if monitoring-reports exists on remote
+              probe = subprocess.run(
+                  ['git', 'ls-remote', '--heads', 'origin', 'monitoring-reports'],
+                  cwd=repo_root, capture_output=True, text=True
+              )
+              if probe.stdout.strip():
+                  run(['git', 'clone', '--branch', 'monitoring-reports',
+                       '--depth', '1', remote_url, tmp], cwd=None)
+              else:
+                  run(['git', 'init', tmp], cwd=None)
+                  run(['git', 'remote', 'add', 'origin', remote_url], cwd=tmp)
+                  run(['git', 'checkout', '--orphan', 'monitoring-reports'], cwd=tmp)
+                  run(['git', 'commit', '--allow-empty', '-m', 'chore: init monitoring-reports'], cwd=tmp)
+
+              # Copy all generated reports into the temp clone
+              reports_src = os.path.join(repo_root, 'reports')
+              reports_dst = os.path.join(tmp, 'reports')
+              if os.path.isdir(reports_src):
+                  shutil.copytree(reports_src, reports_dst, dirs_exist_ok=True)
+
+              run(['git', 'config', 'user.name',  'Learning Monitor Bot'], cwd=tmp)
+              run(['git', 'config', 'user.email', 'monitor-bot@noreply'],  cwd=tmp)
+              run(['git', 'add', 'reports/'], cwd=tmp)
+
+              status = subprocess.run(
+                  ['git', 'status', '--porcelain'], cwd=tmp,
+                  capture_output=True, text=True
+              ).stdout.strip()
+
+              if not status:
+                  print('[monitor] No new reports to push.')
+              else:
+                  ts = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d')
+                  run(['git', 'commit', '-m', f'reports: weekly progress {ts}'], cwd=tmp)
+                  run(['git', 'push', 'origin', 'monitoring-reports'], cwd=tmp)
+                  print('[monitor] Reports pushed to monitoring-reports.')
+          PYEOF
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
