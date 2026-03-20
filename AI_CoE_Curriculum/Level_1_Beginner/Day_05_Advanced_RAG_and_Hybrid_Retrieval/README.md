@@ -8,6 +8,14 @@
 ## Prerequisites
 - Completion of Day 4.
 
+
+## Required Reading
+- [Hugging Face Blog: Matryoshka Embeddings](https://huggingface.co/blog/matryoshka)
+- [Qdrant: Hybrid Search Concepts](https://qdrant.tech/documentation/concepts/hybrid-queries/)
+
+## Video Lectures
+- [Building Production-Ready RAG Applications (YouTube)](https://www.youtube.com/watch?v=1bXyG2Wv3vM)
+
 ## Notebooks (Recommended Sequence)
 | # | Notebook | What You'll Learn | Est. Time |
 |---|----------|-------------------|-----------|

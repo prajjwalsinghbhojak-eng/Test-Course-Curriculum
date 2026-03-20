@@ -8,6 +8,13 @@
 ## Prerequisites
 - Completion of Day 2.
 
+
+## Required Reading
+- [Pinecone: What is a Vector Database?](https://www.pinecone.io/learn/vector-database/)
+
+## Video Lectures
+- [Vector Databases Explained - IBM Technology (YouTube)](https://www.youtube.com/watch?v=klvqMVhA9A0)
+
 ## Notebooks (Recommended Sequence)
 | # | Notebook | What You'll Learn | Est. Time |
 |---|----------|-------------------|-----------|

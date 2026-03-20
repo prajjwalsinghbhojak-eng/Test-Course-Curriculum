@@ -8,6 +8,14 @@
 ## Prerequisites
 - Basic Python knowledge.
 
+
+## Required Reading
+- [Anthropic Prompt Engineering Tutorial](https://github.com/anthropics/prompt-eng-interactive-tutorial)
+- [Prompt Engineering Guide](https://www.promptingguide.ai/)
+
+## Video Lectures
+- [Intro to Large Language Models by Andrej Karpathy (YouTube)](https://www.youtube.com/watch?v=zjkBMFhNj_g)
+
 ## Notebooks (Recommended Sequence)
 | # | Notebook | What You'll Learn | Est. Time |
 |---|----------|-------------------|-----------|

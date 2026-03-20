@@ -8,6 +8,13 @@
 ## Prerequisites
 - Completion of Day 3.
 
+
+## Required Reading
+- [What is Retrieval-Augmented Generation (RAG)?](https://www.ibm.com/topics/retrieval-augmented-generation)
+
+## Video Lectures
+- [Retrieval Augmented Generation (RAG) Explained: A Visual Guide (YouTube)](https://www.youtube.com/watch?v=T-D1OfcDW1M)
+
 ## Notebooks (Recommended Sequence)
 | # | Notebook | What You'll Learn | Est. Time |
 |---|----------|-------------------|-----------|

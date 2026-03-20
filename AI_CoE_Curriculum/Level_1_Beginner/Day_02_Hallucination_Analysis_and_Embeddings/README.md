@@ -8,6 +8,14 @@
 ## Prerequisites
 - Completion of Day 1.
 
+
+## Required Reading
+- [Google ML Crash Course: Embeddings](https://developers.google.com/machine-learning/crash-course/embeddings/video-lecture)
+- [Understanding LLM Hallucinations](https://www.ibm.com/topics/ai-hallucinations)
+
+## Video Lectures
+- [Word Embeddings Explained (YouTube)](https://www.youtube.com/watch?v=5PL0TmQNN5w)
+
 ## Notebooks (Recommended Sequence)
 | # | Notebook | What You'll Learn | Est. Time |
 |---|----------|-------------------|-----------|
