@@ -1,5 +1,6 @@
 # Runtime dependency — filesystem monitoring daemon
 watchdog>=4.0.0
+cryptography>=42.0.0
 
 # Test dependency
 pytest>=8.0.0
