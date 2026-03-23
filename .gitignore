@@ -21,3 +21,4 @@ reports/*/
 
 # Secrets
 encrypt_secret.py
+".claude/" 
