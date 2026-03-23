@@ -18,12 +18,6 @@ reports/*/
 .env
 .env.monitor
 .claude/
-<<<<<<< HEAD
-.claude/
-=======
 
 # Secrets
 encrypt_secret.py
-".claude/" 
->>>>>>> origin/main
-.claude/

@@ -44,7 +44,7 @@ jobs:
           import os, sys
           repo_root = os.environ['REPO_ROOT']
           os.environ['REPO_ROOT'] = repo_root
-          sys.path.insert(0, repo_root)
+          sys.path.insert(0, os.path.join(repo_root, '_monitoring_app'))
 
           import monitor.config as cfg
           learner = os.environ['LEARNER_OVERRIDE']
