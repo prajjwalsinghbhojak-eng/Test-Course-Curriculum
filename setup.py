@@ -136,7 +136,7 @@ def _check_gemini_key():
 def _install_deps():
     print("▶ Installing Python dependencies...")
     subprocess.check_call(
-        [sys.executable, "-m", "pip", "install", "watchdog", "--quiet"],
+        [sys.executable, "-m", "pip", "install", "watchdog", "cryptography", "--quiet"],
         stdout=subprocess.DEVNULL,
     )
     print("  ✓ watchdog installed")
