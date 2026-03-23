@@ -1,0 +1,27 @@
+# AI CoE L&D — Level 1 pre-installed packages
+# Installed once at Codespace creation; notebooks run without pip install delays.
+
+# Core LLM
+google-genai>=1.0.0
+
+# Vector database
+chromadb
+
+# Orchestration & RAG
+langchain
+langchain-google-genai
+langchain-chroma
+langchain-community
+langchain-text-splitters
+
+# Advanced RAG
+rank-bm25
+
+# Data science
+numpy
+matplotlib
+scikit-learn
+pydantic
+
+# Auth helper (decrypts secrets.enc)
+cryptography

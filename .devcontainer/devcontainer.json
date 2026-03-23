@@ -1,0 +1,30 @@
+{
+  "name": "AI CoE L&D",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+
+  // Install all course packages once at container creation.
+  // Notebooks skip their pip install cells — everything is ready immediately.
+  "postCreateCommand": "pip install -q -r .devcontainer/requirements.txt",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter",
+        "ms-toolsai.vscode-jupyter-cell-tags"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "notebook.cellToolbarLocation": {
+          "default": "right"
+        }
+      }
+    }
+  },
+
+  // COURSE_PASSPHRASE is set as a Codespaces secret by the learner (value from instructor).
+  // It is automatically available in the container — no extra wiring needed.
+  "remoteEnv": {
+    "COURSE_PASSPHRASE": "${localEnv:COURSE_PASSPHRASE}"
+  }
+}
