@@ -1,0 +1,38 @@
+{
+  "name": "Capstone — Project 1: Customer Support Bot",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+
+  // Node.js is required for Gemini CLI
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    }
+  },
+
+  // Install dependencies, decrypt API key, install Gemini CLI, download dataset
+  "postCreateCommand": "bash .devcontainer/project1/setup.sh",
+
+  // Open directly inside the project folder
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/capstone/project1_customer_support",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "charliermarsh.ruff"
+      }
+    }
+  },
+
+  // COURSE_PASSPHRASE is set as a Codespaces secret by the learner (value from instructor).
+  // setup.sh decrypts secrets.enc using this passphrase and exports GEMINI_API_KEY.
+  "remoteEnv": {
+    "COURSE_PASSPHRASE": "${localEnv:COURSE_PASSPHRASE}"
+  }
+}
