@@ -1,0 +1,16 @@
+Classify the following customer support query to decide how to route it.
+
+Query: {query}
+
+Choose one of the following routes:
+- "direct_answer"   — A factual question that can be answered from documentation.
+- "product_lookup"  — The query mentions a specific product area (e.g. Payments, Billing, APIs).
+                      Also return the product_area name.
+- "escalation"      — The customer is frustrated, filing a complaint, or explicitly asking
+                      to speak with a human or raise a ticket.
+
+Respond with a JSON object:
+{
+  "route": "<direct_answer|product_lookup|escalation>",
+  "product_area": "<area name or null>"
+}

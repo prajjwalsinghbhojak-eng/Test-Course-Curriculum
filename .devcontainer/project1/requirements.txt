@@ -1,0 +1,36 @@
+# Capstone Project 1 — Customer Support Intelligence Bot
+
+# Core LLM
+google-genai>=1.0.0
+
+# Vector database
+chromadb
+
+# Orchestration & agents
+langchain
+langchain-google-genai
+langchain-chroma
+langchain-community
+langchain-text-splitters
+langgraph
+
+# Advanced retrieval
+rank-bm25
+
+# Document processing
+pypdf
+python-docx
+
+# Data
+pandas
+datasets  # HuggingFace datasets (used by setup_data.py)
+
+# UI
+streamlit
+
+# Auth (decrypts secrets.enc)
+cryptography
+
+# Utilities
+pydantic
+python-dotenv

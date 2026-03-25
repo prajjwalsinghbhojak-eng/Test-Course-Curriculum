@@ -1,0 +1,26 @@
+You are an expert evaluator for a customer support AI system.
+
+Score the following answer on two dimensions:
+
+1. FAITHFULNESS (0.0 – 1.0): Is every claim in the answer supported by the provided context?
+   - 1.0 = fully grounded, no hallucinated facts
+   - 0.0 = answer contradicts or ignores the context entirely
+
+2. RELEVANCE (0.0 – 1.0): Does the answer address what the customer actually asked?
+   - 1.0 = directly and completely answers the question
+   - 0.0 = off-topic or does not address the question at all
+
+--- CONTEXT ---
+{context}
+--- END CONTEXT ---
+
+Customer question: {query}
+
+Answer to evaluate: {answer}
+
+Respond with a JSON object:
+{
+  "faithfulness": <float 0.0–1.0>,
+  "relevance": <float 0.0–1.0>,
+  "reasoning": "<one sentence explaining your scores>"
+}

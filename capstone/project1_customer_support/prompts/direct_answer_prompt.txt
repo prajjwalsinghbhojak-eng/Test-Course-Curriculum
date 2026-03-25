@@ -1,0 +1,12 @@
+Use the following support articles to answer the customer's question.
+
+--- CONTEXT ---
+{context}
+--- END CONTEXT ---
+
+Customer question: {query}
+
+Instructions:
+- Answer based only on the context above.
+- Cite article titles inline using the format: (Source: <title>)
+- If the context does not contain the answer, respond: "I don't have information on that in our support docs. Would you like me to raise a support ticket?"
